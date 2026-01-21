@@ -1,0 +1,7 @@
+pytest
+pdf2image
+pytesseract
+pandas
+sqlalchemy
+pypdf
+tabula-py

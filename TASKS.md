@@ -1,0 +1,35 @@
+- [x] Phase 1: Foundation & Environment
+    - [x] [Task] Environment Setup
+        - [x] Create `requirements.txt`
+        - [x] Create `tests/test_env.py`
+        - [x] Install packages
+        - [x] Run `tests/test_env.py`
+        - [x] Commit "Environment Setup"
+- [ ] Phase 2: PDF Ingestion (TDD)
+    - [ ] [Task] PDF Loading
+        - [ ] Create `tests/test_pdf_load.py`
+        - [ ] Implement `src/loader.py`
+        - [ ] Run `tests/test_pdf_load.py`
+        - [ ] Commit "PDF Loading"
+    - [ ] [Task] OCR Processing
+        - [ ] Create `tests/test_ocr.py`
+        - [ ] Implement `src/ocr_engine.py`
+        - [ ] Run `tests/test_ocr.py`
+        - [ ] Commit "OCR Processing"
+- [ ] Phase 3: Structure Extraction
+    - [ ] [Task] Case Metadata Regex
+        - [ ] Create `tests/test_regex.py`
+        - [ ] Implement `src/parser.py`
+        - [ ] Run `tests/test_regex.py`
+        - [ ] Commit "Case Metadata Regex"
+    - [ ] [Task] Table Extraction
+        - [ ] Create `tests/test_table.py`
+        - [ ] Implement `src/table_extractor.py`
+        - [ ] Run `tests/test_table.py`
+        - [ ] Commit "Table Extraction"
+- [ ] Phase 4: Database & Storage
+    - [ ] [Task] SQLite Schema
+        - [ ] Create `tests/test_db.py`
+        - [ ] Implement `src/database.py`
+        - [ ] Run `tests/test_db.py`
+        - [ ] Commit "SQLite Schema"
