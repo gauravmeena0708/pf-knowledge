@@ -6,13 +6,13 @@
         - [x] Run `tests/test_env.py`
         - [x] Commit "Environment Setup"
 - [ ] Phase 2: PDF Ingestion (TDD)
-    - [/] [Task] PDF Loading
+    - [x] [Task] PDF Loading
         - [x] Create `tests/test_pdf_load.py`
-        - [ ] Implement `src/loader.py`
-        - [ ] Run `tests/test_pdf_load.py`
-        - [ ] Commit "PDF Loading"
-    - [ ] [Task] OCR Processing
-        - [ ] Create `tests/test_ocr.py`
+        - [x] Implement `src/loader.py`
+        - [x] Run `tests/test_pdf_load.py`
+        - [x] Commit "PDF Loading"
+    - [/] [Task] OCR Processing
+        - [x] Create `tests/test_ocr.py`
         - [ ] Implement `src/ocr_engine.py`
         - [ ] Run `tests/test_ocr.py`
         - [ ] Commit "OCR Processing"
