@@ -33,9 +33,21 @@
         - [x] Implement `src/database.py`
         - [x] Run `tests/test_db.py`
         - [x] Commit "SQLite Schema"
-- [ ] Phase 5: Pipeline Integration
-    - [/] [Task] Main Pipeline Script
+- [x] Phase 5: Pipeline Integration
+    - [x] [Task] Main Pipeline Script
         - [x] Create `tests/test_pipeline.py`
-        - [ ] Implement `src/pipeline.py`
-        - [ ] Run `tests/test_pipeline.py`
-        - [ ] Commit "Pipeline Integration"
+        - [x] Implement `src/pipeline.py`
+        - [x] Run `tests/test_pipeline.py`
+        - [x] Commit "Pipeline Integration"
+- [ ] Phase 4.5: NLP Upgrade
+    - [x] Phase 4.5: NLP Upgrade
+    - [x] [Task] Install Transformers Library
+        - [x] Update `requirements.txt`
+        - [x] Create `tests/test_bert_load.py`
+        - [x] Run `tests/test_bert_load.py`
+    - [x] [Task] Implement BERT Extraction
+        - [x] Create `tests/test_bert_ner.py`
+        - [x] Implement `src/nlp/ner_engine.py` (Lazy loading, Fallback)
+        - [x] Run `tests/test_bert_ner.py`
+    - [x] [Task] Fine-Tuning Preparation
+        - [x] Implement `src/nlp/train_prep.py`
