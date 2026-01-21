@@ -6,4 +6,13 @@ sqlalchemy
 pypdf
 tabula-py
 transformers
-torch --index-url https://download.pytorch.org/whl/cpu
+torch
+gliner
+keybert
+streamlit
+fastapi
+uvicorn
+python-multipart
+httpx
+faiss-cpu
+sentence-transformers
