@@ -1,7 +1,12 @@
+import sys
 import os
+
+# Add project root to path
+sys.path.append(os.getcwd())
+
 import glob
 from sqlalchemy.orm import Session
-from src.database import init_db, get_session, Case
+from src.database_v2 import init_db, get_session, Case
 from src.pipeline import process_case_file
 import pandas as pd
 

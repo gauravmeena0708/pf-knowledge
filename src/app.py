@@ -57,13 +57,27 @@ def main():
     # Load Data
     cases = load_data(session, search_query, order_date_input)
     
-    # Apply Entity Filter using Entity table
+    # Entity Filter
     if entity_filter:
         cases = session.query(Case).join(Entity).filter(
             Entity.entity_text.contains(entity_filter)
         ).distinct().all()
     
     st.sidebar.markdown(f"**Found {len(cases)} cases**")
+    
+    # Classification Stats
+    if cases:
+        st.sidebar.markdown("### Classification Stats")
+        types = [c.case_type for c in cases if c.case_type]
+        outcomes = [c.outcome for c in cases if c.outcome]
+        
+        if types:
+            st.sidebar.write("Types:")
+            st.sidebar.bar_chart(pd.Series(types).value_counts())
+        
+        if outcomes:
+             st.sidebar.write("Outcomes:")
+             st.sidebar.bar_chart(pd.Series(outcomes).value_counts())
 
     # Main Feed
     if not cases:
@@ -79,9 +93,20 @@ def main():
                 col1, col2 = st.columns([2, 1])
                 
                 with col1:
-                    st.markdown("### Text Snippet")
-                    snippet = case.text_content[:1000] + "..." if case.text_content else "No text content."
-                    st.text_area("Content", snippet, height=150, key=f"text_{case.id}")
+                    st.markdown("### Content View")
+                    # Tabs for different content views
+                    tab_clean, tab_raw = st.tabs(["📄 Cleaned Text", "📝 Original OCR"])
+                    
+                    with tab_clean:
+                        if hasattr(case, 'processed_content') and case.processed_content:
+                            st.markdown(case.processed_content, unsafe_allow_html=True)
+                        else:
+                            st.info("No processed content available (run pipeline to generate).")
+                            
+                    with tab_raw:
+                        content = case.text_content if case.text_content else "No text content."
+                        st.text_area("Raw Text", content, height=400, key=f"raw_{case.id}")
+                    
                     st.caption(f"Source: {case.pdf_path}")
 
                 with col2:

@@ -10,6 +10,7 @@ from src.nlp.case_classifier import CaseClassifier
 from src.nlp.timeline_extractor import TimelineExtractor
 from src.nlp.relation_extractor import RelationExtractor
 from src.nlp.financial_parser import FinancialParser
+from src.nlp.advanced_cleaner import create_processed_content
 from src.table_extractor import extract_tables
 import pandas as pd
 
@@ -172,7 +173,11 @@ def process_case_file(pdf_path: str, session: Session) -> Case:
     case_id = metadata.get('id') or 'UNKNOWN'
     order_date = metadata.get('date')
     
-    # 10. Save to DB with enriched data
+    # 10. Create processed content (human-readable)
+    processed_text = create_processed_content(cleaned_text)
+    print(f"[Pipeline] Processed content: {len(processed_text)} chars (vs {len(cleaned_text)} raw)")
+    
+    # 11. Save to DB with enriched data
     # Store advanced NLP outputs in JSON for now (Issue 2 will fix schema)
     enriched_data = {
         'case_type': classification['case_type'],
@@ -185,18 +190,68 @@ def process_case_file(pdf_path: str, session: Session) -> Case:
     }
     
     # Merge enriched data into entities JSON temporarily
+    # Merge enriched data into entities JSON temporarily
     # In Issue 2 fix, these will become separate tables
     entities['_enriched'] = enriched_data
     
-    new_case = add_case(
+    # Import database_v2 for new schema
+    from src.database_v2 import (
+        add_case as add_case_v2, add_entity, add_timeline_event, 
+        add_relation, add_financial_record
+    )
+    
+    new_case = add_case_v2(
         session=session,
         case_id=case_id,
         pdf_path=pdf_path,
+        case_type=classification['case_type'],
+        outcome=classification['outcome'],
+        confidence=classification['confidence'],
         order_date=order_date,
         text_content=cleaned_text,
-        entities=entities,
+        processed_content=processed_text,
         tables=tables
     )
+    
+    # Save Entities (with deduplication and filtering)
+    seen_entities = set()
+    for entity_type, entity_list in entities.items():
+        if entity_type == '_enriched': continue
+        for txt in entity_list:
+            if not txt: continue
+            
+            # Filter 1: Length check
+            if len(txt) < 3: continue
+            
+            # Filter 2: Deduplication (case-insensitive per case)
+            key = (entity_type, txt.lower().strip())
+            if key in seen_entities: continue
+            seen_entities.add(key)
+            
+            # Filter 3: Blacklist (common OCR noise)
+            if txt.lower() in ['date', 'place', 'signature', 'none', 'null']: continue
+            
+            add_entity(session, new_case.id, entity_type, txt.strip())
+                
+    # Save Timeline
+    for event in timeline:
+        add_timeline_event(session, new_case.id, event)
+        
+    # Save Relations
+    for relation in relations:
+        add_relation(session, new_case.id, relation)
+        
+    # Save Financial Data (if any parsed in enriched_data)
+    if 'financial_data' in enriched_data and isinstance(enriched_data['financial_data'], dict):
+        for acc, amt in enriched_data['financial_data'].items():
+             # Basic cleanup if needed, but assuming float/int
+            try:
+                val = float(amt) if isinstance(amt, (int, float, str)) else 0.0
+                add_financial_record(session, new_case.id, acc, val)
+            except:
+                pass
+                
+    session.commit() # Commit all child records
     
     print(f"[Pipeline] ✅ Saved case: {case_id}\n")
     return new_case

@@ -17,7 +17,8 @@ class Case(Base):
     confidence = Column(Float)  # Classification confidence
     order_date = Column(String, nullable=True, index=True)  # ISO YYYY-MM-DD
     pdf_path = Column(String, nullable=False)
-    text_content = Column(Text, nullable=True)
+    text_content = Column(Text, nullable=True)  # Raw OCR text
+    processed_content = Column(Text, nullable=True)  # Cleaned, human-readable text
     
     # Relationships
     entities = relationship("Entity", back_populates="case", cascade="all, delete-orphan")
@@ -118,6 +119,7 @@ def add_case(
     confidence: float = 0.0,
     order_date: Optional[str] = None,
     text_content: Optional[str] = None,
+    processed_content: Optional[str] = None,
     tables: Optional[list] = None
 ) -> Case:
     """Add a new case to the database."""
@@ -129,6 +131,7 @@ def add_case(
         pdf_path=pdf_path,
         order_date=order_date,
         text_content=text_content,
+        processed_content=processed_content,
         tables=tables
     )
     session.add(new_case)
