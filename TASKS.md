@@ -5,20 +5,20 @@
         - [x] Install packages
         - [x] Run `tests/test_env.py`
         - [x] Commit "Environment Setup"
-- [ ] Phase 2: PDF Ingestion (TDD)
+- [x] Phase 2: PDF Ingestion (TDD)
     - [x] [Task] PDF Loading
         - [x] Create `tests/test_pdf_load.py`
         - [x] Implement `src/loader.py`
         - [x] Run `tests/test_pdf_load.py`
         - [x] Commit "PDF Loading"
-    - [/] [Task] OCR Processing
+    - [x] [Task] OCR Processing
         - [x] Create `tests/test_ocr.py`
-        - [ ] Implement `src/ocr_engine.py`
-        - [ ] Run `tests/test_ocr.py`
-        - [ ] Commit "OCR Processing"
+        - [x] Implement `src/ocr_engine.py`
+        - [x] Run `tests/test_ocr.py`
+        - [x] Commit "OCR Processing"
 - [ ] Phase 3: Structure Extraction
-    - [ ] [Task] Case Metadata Regex
-        - [ ] Create `tests/test_regex.py`
+    - [/] [Task] Case Metadata Regex
+        - [x] Create `tests/test_regex.py`
         - [ ] Implement `src/parser.py`
         - [ ] Run `tests/test_regex.py`
         - [ ] Commit "Case Metadata Regex"
