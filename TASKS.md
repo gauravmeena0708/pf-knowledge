@@ -17,13 +17,13 @@
         - [x] Run `tests/test_ocr.py`
         - [x] Commit "OCR Processing"
 - [ ] Phase 3: Structure Extraction
-    - [/] [Task] Case Metadata Regex
+    - [x] [Task] Case Metadata Regex
         - [x] Create `tests/test_regex.py`
-        - [ ] Implement `src/parser.py`
-        - [ ] Run `tests/test_regex.py`
-        - [ ] Commit "Case Metadata Regex"
-    - [ ] [Task] Table Extraction
-        - [ ] Create `tests/test_table.py`
+        - [x] Implement `src/parser.py`
+        - [x] Run `tests/test_regex.py`
+        - [x] Commit "Case Metadata Regex"
+    - [/] [Task] Table Extraction
+        - [x] Create `tests/test_table.py`
         - [ ] Implement `src/table_extractor.py`
         - [ ] Run `tests/test_table.py`
         - [ ] Commit "Table Extraction"
