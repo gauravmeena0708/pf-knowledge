@@ -27,9 +27,15 @@
         - [x] Implement `src/table_extractor.py`
         - [x] Run `tests/test_table.py`
         - [x] Commit "Table Extraction"
-- [ ] Phase 4: Database & Storage
-    - [/] [Task] SQLite Schema
+- [x] Phase 4: Database & Storage
+    - [x] [Task] SQLite Schema
         - [x] Create `tests/test_db.py`
-        - [ ] Implement `src/database.py`
-        - [ ] Run `tests/test_db.py`
-        - [ ] Commit "SQLite Schema"
+        - [x] Implement `src/database.py`
+        - [x] Run `tests/test_db.py`
+        - [x] Commit "SQLite Schema"
+- [ ] Phase 5: Pipeline Integration
+    - [/] [Task] Main Pipeline Script
+        - [x] Create `tests/test_pipeline.py`
+        - [ ] Implement `src/pipeline.py`
+        - [ ] Run `tests/test_pipeline.py`
+        - [ ] Commit "Pipeline Integration"
