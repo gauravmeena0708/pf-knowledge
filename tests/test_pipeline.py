@@ -50,8 +50,10 @@ def test_process_case_file(mock_get_ner, mock_tables, mock_extract_text, mock_lo
     mock_ner_instance.extract_entities.return_value = {"PER": ["Test Person"]}
     mock_get_ner.return_value = mock_ner_instance
     
-    # Mock Tables
-    mock_tables.return_value = [{"header": ["A", "B"], "data": [[1, 2]]}]
+    # Mock Tables - return DataFrame-like objects
+    mock_df = MagicMock()
+    mock_df.to_dict.return_value = [{"A": 1, "B": 2}]
+    mock_tables.return_value = [mock_df]
 
     pdf_path = "/tmp/test_case.pdf"
     
@@ -67,7 +69,7 @@ def test_process_case_file(mock_get_ner, mock_tables, mock_extract_text, mock_lo
     assert saved_case.id is not None
     # Verify new fields
     assert saved_case.entities == {"PER": ["Test Person"]}
-    assert saved_case.tables == [{"header": ["A", "B"], "data": [[1, 2]]}]
+    assert saved_case.tables == [[{"A": 1, "B": 2}]]
     
     # Verify interactions
     mock_load_pdf.assert_called_once_with(pdf_path)
