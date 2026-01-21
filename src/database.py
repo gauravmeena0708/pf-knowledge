@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date, Text
+from sqlalchemy import create_engine, Column, Integer, String, Date, Text, JSON
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from sqlalchemy.engine import Engine
 from typing import Optional
@@ -16,6 +16,8 @@ class Case(Base):
     order_date = Column(String, nullable=True) # Storing as ISO YYYY-MM-DD string for simplicity
     pdf_path = Column(String, nullable=False)
     text_content = Column(Text, nullable=True)
+    entities = Column(JSON, nullable=True) # Store Person, Org, etc.
+    tables = Column(JSON, nullable=True) # Store extracted tables
 
 def init_db(db_url: str = 'sqlite:///elis.db') -> Engine:
     """
@@ -32,7 +34,7 @@ def get_session(engine: Engine) -> Session:
     SessionLocal = sessionmaker(bind=engine)
     return SessionLocal()
 
-def add_case(session: Session, case_id: str, pdf_path: str, order_date: Optional[str] = None, text_content: Optional[str] = None) -> Case:
+def add_case(session: Session, case_id: str, pdf_path: str, order_date: Optional[str] = None, text_content: Optional[str] = None, entities: Optional[dict] = None, tables: Optional[list] = None) -> Case:
     """
     Adds a new case to the database.
     """
@@ -40,7 +42,9 @@ def add_case(session: Session, case_id: str, pdf_path: str, order_date: Optional
         case_id=case_id,
         pdf_path=pdf_path,
         order_date=order_date,
-        text_content=text_content
+        text_content=text_content,
+        entities=entities,
+        tables=tables
     )
     session.add(new_case)
     session.commit()

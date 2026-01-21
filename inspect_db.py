@@ -14,6 +14,8 @@ def inspect_db():
         print(f"PDF: {case.pdf_path}")
         print("Text Content Preview (first 500 chars):")
         print(case.text_content[:500] if case.text_content else "NO TEXT CONTENT")
+        print(f"Entities: {case.entities}")
+        print(f"Tables (Count): {len(case.tables) if case.tables else 0}")
         print("-" * 40)
 
 if __name__ == "__main__":

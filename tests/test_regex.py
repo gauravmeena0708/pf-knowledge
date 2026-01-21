@@ -64,3 +64,20 @@ def test_extract_metadata_none():
     
     assert metadata['date'] is None
     assert metadata['id'] is None
+
+def test_invalid_dates():
+    """Test that invalid dates are not extracted."""
+    from src.parser import extract_metadata
+    
+    # User reported case
+    text = "Order Date: 68-07-2025."
+    metadata = extract_metadata(text)
+    # Should ideally return None or fail parsing and fallback to something valid?
+    # Current implementation falls back to raw string. We want it to be None or validated.
+    # If validation fails, it might return raw string currently.
+    # We want to change behavior so if it's invalid, it doesn't return garbage.
+    
+    # If we implement strict validation, this should be None.
+    # If logic is "try parse, else return raw", it returns "68-07-2025".
+    # User wants to PREVENT this from DB. So we assert it is NOT "68-07-2025".
+    assert metadata['date'] is None, f"Expected None for invalid date, got {metadata['date']}"

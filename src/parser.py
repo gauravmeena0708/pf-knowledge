@@ -40,8 +40,10 @@ def extract_metadata(text: str) -> Dict[str, Optional[str]]:
                  d = datetime.strptime(raw_date, "%d %b %Y")
                  metadata['date'] = d.strftime("%Y-%m-%d")
         except ValueError:
-            # Fallback or keep raw if parsing fails
-            metadata['date'] = raw_date
+            # Parsing failed. Do NOT fallback to raw string if it's invalid.
+            # Keep as None.
+            print(f"Warning: Invalid date extracted: {raw_date}")
+            metadata['date'] = None
     
     id_match = id_pattern.search(text)
     if id_match:

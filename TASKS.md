@@ -51,3 +51,38 @@
         - [x] Run `tests/test_bert_ner.py`
     - [x] [Task] Fine-Tuning Preparation
         - [x] Implement `src/nlp/train_prep.py`
+- [ ] Phase 6: Data Cleaning
+    - [x] [Task] Text Cleaning Module
+        - [x] Create `tests/test_cleaner.py` (Test noise removal)
+        - [x] Implement `src/nlp/cleaner.py`
+        - [x] Update `src/pipeline.py` to use cleaner
+        - [x] Re-run execution and verify
+- [ ] Phase 7: Full Pipeline Integration
+    - [x] [Task] Database Update
+        - [x] Update `src/database.py` (Add entities/tables columns)
+        - [x] Update `tests/test_db.py`
+    - [x] [Task] Component Wiring
+        - [x] Update `src/pipeline.py` (Call NER & Table Extractor)
+        - [x] Update `tests/test_pipeline.py`
+        - [x] Verify full run
+- [x] Phase 8: Advanced Entity Extraction (GLiNER)
+    - [x] [Task] Dependency Setup
+        - [x] Add `gliner` to `requirements.txt`
+        - [x] Create `tests/test_gliner_load.py`
+        - [x] Run `tests/test_gliner_load.py`
+    - [x] [Task] Implement Custom Extractor
+        - [x] Implement `src/nlp/entity_extractor.py` (GLiNER logic)
+        - [x] Create `tests/test_legal_ner.py`
+        - [x] Implement post-processing (cleanup)
+        - [x] Run `tests/test_legal_ner.py`
+- [ ] Phase 9: Search & Visualization UI
+    - [x] [Task] Setup
+        - [x] Add `streamlit` to `requirements.txt`
+        - [x] Create `src/app.py` skeleton
+    - [x] [Task] Dashboard Logic
+        - [x] Implement Sidebar (Date/Entity Filters)
+        - [x] Implement Main Feed (Cards with Metadata)
+        - [x] Implement Detail View (JSON Entities / Tables)
+        - [x] Implement Full Text Search
+    - [x] [Task] Verify
+        - [ ] Run `streamlit run src/app.py` (Manual)
