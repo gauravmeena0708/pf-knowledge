@@ -6,8 +6,8 @@
         - [x] Run `tests/test_env.py`
         - [x] Commit "Environment Setup"
 - [ ] Phase 2: PDF Ingestion (TDD)
-    - [ ] [Task] PDF Loading
-        - [ ] Create `tests/test_pdf_load.py`
+    - [/] [Task] PDF Loading
+        - [x] Create `tests/test_pdf_load.py`
         - [ ] Implement `src/loader.py`
         - [ ] Run `tests/test_pdf_load.py`
         - [ ] Commit "PDF Loading"
