@@ -22,14 +22,14 @@
         - [x] Implement `src/parser.py`
         - [x] Run `tests/test_regex.py`
         - [x] Commit "Case Metadata Regex"
-    - [/] [Task] Table Extraction
+    - [x] [Task] Table Extraction
         - [x] Create `tests/test_table.py`
-        - [ ] Implement `src/table_extractor.py`
-        - [ ] Run `tests/test_table.py`
-        - [ ] Commit "Table Extraction"
+        - [x] Implement `src/table_extractor.py`
+        - [x] Run `tests/test_table.py`
+        - [x] Commit "Table Extraction"
 - [ ] Phase 4: Database & Storage
-    - [ ] [Task] SQLite Schema
-        - [ ] Create `tests/test_db.py`
+    - [/] [Task] SQLite Schema
+        - [x] Create `tests/test_db.py`
         - [ ] Implement `src/database.py`
         - [ ] Run `tests/test_db.py`
         - [ ] Commit "SQLite Schema"
