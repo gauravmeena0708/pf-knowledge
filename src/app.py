@@ -6,8 +6,8 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.database import init_db, get_session, Case
-from sqlalchemy import or_
+from src.database_v2 import init_db, get_session, Case, Entity, TimelineEvent, Relation
+from sqlalchemy import or_, func
 import pandas as pd
 import json
 
@@ -57,17 +57,12 @@ def main():
     # Load Data
     cases = load_data(session, search_query, order_date_input)
     
-    # Apply Entity Filter in Python (JSON search is database specific/complex in SQL)
+    # Apply Entity Filter using Entity table
     if entity_filter:
-        filtered_cases = []
-        for case in cases:
-            if case.entities:
-                # Check if entity_filter string exists in the entities JSON dump
-                # This is a broad search for simplicity
-                if entity_filter.lower() in str(case.entities).lower():
-                    filtered_cases.append(case)
-        cases = filtered_cases
-
+        cases = session.query(Case).join(Entity).filter(
+            Entity.entity_text.contains(entity_filter)
+        ).distinct().all()
+    
     st.sidebar.markdown(f"**Found {len(cases)} cases**")
 
     # Main Feed
@@ -91,8 +86,22 @@ def main():
 
                 with col2:
                     st.markdown("### Extracted Entities")
-                    if case.entities:
-                        st.json(case.entities)
+                    # Fetch entities from Entity table
+                    entities_query = session.query(Entity).filter(Entity.case_id == case.id).all()
+                    if entities_query:
+                        # Group by entity type
+                        entity_dict = {}
+                        for entity in entities_query:
+                            if entity.entity_type not in entity_dict:
+                                entity_dict[entity.entity_type] = []
+                            entity_dict[entity.entity_type].append(entity.entity_text)
+                        
+                        for entity_type, entities in entity_dict.items():
+                            with st.expander(f"{entity_type} ({len(entities)})"):
+                                for ent in entities[:5]:  # Show first 5
+                                    st.write(f"- {ent}")
+                                if len(entities) > 5:
+                                    st.caption(f"... and {len(entities) - 5} more")
                     else:
                         st.write("No entities extracted.")
                 
