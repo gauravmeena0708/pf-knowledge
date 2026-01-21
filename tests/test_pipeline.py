@@ -53,6 +53,11 @@ def test_process_case_file(mock_get_ner, mock_tables, mock_extract_text, mock_lo
     # Mock Tables - return DataFrame-like objects
     mock_df = MagicMock()
     mock_df.to_dict.return_value = [{"A": 1, "B": 2}]
+    
+    # Make it work with isinstance check
+    import pandas as pd
+    mock_df.__class__ = pd.DataFrame
+    
     mock_tables.return_value = [mock_df]
 
     pdf_path = "/tmp/test_case.pdf"
@@ -67,8 +72,18 @@ def test_process_case_file(mock_get_ner, mock_tables, mock_extract_text, mock_lo
     assert saved_case.order_date == "2023-10-20"
     assert saved_case.pdf_path == pdf_path
     assert saved_case.id is not None
-    # Verify new fields
-    assert saved_case.entities == {"PER": ["Test Person"]}
+    
+    # Verify entities structure (now includes _enriched)
+    assert saved_case.entities is not None
+    assert 'PER' in saved_case.entities
+    assert saved_case.entities['PER'] == ["Test Person"]
+    
+    # Verify enriched data is present
+    assert '_enriched' in saved_case.entities
+    assert 'case_type' in saved_case.entities['_enriched']
+    assert 'timeline' in saved_case.entities['_enriched']
+    assert 'relations' in saved_case.entities['_enriched']
+    
     assert saved_case.tables == [[{"A": 1, "B": 2}]]
     
     # Verify interactions
