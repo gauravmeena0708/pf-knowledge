@@ -1,5 +1,11 @@
 import streamlit as st
 from sqlalchemy.orm import Session
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from src.database import init_db, get_session, Case
 from sqlalchemy import or_
 import pandas as pd
