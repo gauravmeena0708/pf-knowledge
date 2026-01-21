@@ -1,8 +1,13 @@
 import streamlit as st
 import pandas as pd
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from src.database import init_db, get_session, Case
 from src.knowledge_base import LegalKnowledgeBase
-import os
 
 # Page config
 st.set_page_config(
