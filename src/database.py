@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date, Text, JSON
+from sqlalchemy import create_engine, Column, Integer, String, Date, Text, JSON, Float
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from sqlalchemy.engine import Engine
 from typing import Optional
@@ -19,6 +19,14 @@ class Case(Base):
     entities = Column(JSON, nullable=True) # Store Person, Org, etc.
     tables = Column(JSON, nullable=True) # Store extracted tables
 
+    # New columns for Phase 1 refactor
+    judge_name = Column(String, index=True, nullable=True)
+    establishment_name = Column(String, nullable=True)
+    section_cited = Column(String, nullable=True) # '7A' or '14B'
+    total_dues = Column(Float, nullable=True)
+    timeline = Column(JSON, nullable=True) # Structured timeline events
+
+
 def init_db(db_url: str = 'sqlite:///elis.db') -> Engine:
     """
     Initializes the database engine and creates tables.
@@ -34,7 +42,8 @@ def get_session(engine: Engine) -> Session:
     SessionLocal = sessionmaker(bind=engine)
     return SessionLocal()
 
-def add_case(session: Session, case_id: str, pdf_path: str, order_date: Optional[str] = None, text_content: Optional[str] = None, entities: Optional[dict] = None, tables: Optional[list] = None) -> Case:
+def add_case(session: Session, case_id: str, pdf_path: str, order_date: Optional[str] = None, text_content: Optional[str] = None, entities: Optional[dict] = None, tables: Optional[list] = None,
+             judge_name: str = None, establishment_name: str = None, section_cited: str = None, total_dues: float = None, timeline: list = None) -> Case:
     """
     Adds a new case to the database.
     """
@@ -44,8 +53,14 @@ def add_case(session: Session, case_id: str, pdf_path: str, order_date: Optional
         order_date=order_date,
         text_content=text_content,
         entities=entities,
-        tables=tables
+        tables=tables,
+        judge_name=judge_name,
+        establishment_name=establishment_name,
+        section_cited=section_cited,
+        total_dues=total_dues,
+        timeline=timeline
     )
+
     session.add(new_case)
     session.commit()
     session.refresh(new_case)

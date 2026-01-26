@@ -176,9 +176,7 @@ def process_case_file(pdf_path: str, session: Session) -> Case:
     # 10. Create processed content (human-readable)
     processed_text = create_processed_content(cleaned_text)
     print(f"[Pipeline] Processed content: {len(processed_text)} chars (vs {len(cleaned_text)} raw)")
-    
-    # 11. Save to DB with enriched data
-    # Store advanced NLP outputs in JSON for now (Issue 2 will fix schema)
+
     enriched_data = {
         'case_type': classification['case_type'],
         'outcome': classification['outcome'],
@@ -188,70 +186,70 @@ def process_case_file(pdf_path: str, session: Session) -> Case:
         'compliance_gaps': compliance_gaps,
         'financial_data': financial_data
     }
-    
-    # Merge enriched data into entities JSON temporarily
-    # Merge enriched data into entities JSON temporarily
-    # In Issue 2 fix, these will become separate tables
+
+    # 11. Save to DB with enriched data
+    # Create merged entities dictionary which includes enriched data
     entities['_enriched'] = enriched_data
     
-    # Import database_v2 for new schema
-    from src.database_v2 import (
-        add_case as add_case_v2, add_entity, add_timeline_event, 
-        add_relation, add_financial_record
-    )
-    
-    new_case = add_case_v2(
+    # Extract specific fields for the new columns
+    judge_name = None
+    if 'Judge' in entities and entities['Judge']:
+        judge_name = entities['Judge'][0]
+        
+    establishment_name = None
+    if 'Establishment' in entities and entities['Establishment']:
+        establishment_name = entities['Establishment'][0]
+        
+    section_cited = classification.get('case_type')
+    if (not section_cited or section_cited == 'unknown') and 'Section' in entities and entities['Section']:
+        section_cited = entities['Section'][0]
+        
+    total_dues = None
+    # Try to get from financial data first
+    if financial_data and 'total_dues' in financial_data:
+        try:
+            total_dues = float(financial_data['total_dues'])
+        except:
+             pass
+    # Fallback to GLiNER extracted Amount if available (heuristic: max amount?)
+    if total_dues is None and 'Amount' in entities and entities['Amount']:
+        try:
+             # Heuristic: take the largest amount extracted
+             amounts = entities['Amount']
+             # entities['Amount'] might be strings or floats (GLiNER returns numbers now based on my read of EntityExtractor)
+             # EntityExtractor._clean_amount returns floats.
+             # But merge_entities might have mixed types if BERT returns strings.
+             # Let's handle safely.
+             valid_amounts = []
+             for a in amounts:
+                 if isinstance(a, (int, float)):
+                     valid_amounts.append(a)
+                 else:
+                     # try parsing
+                     try:
+                         valid_amounts.append(float(a))
+                     except:
+                         pass
+             if valid_amounts:
+                 total_dues = max(valid_amounts)
+        except:
+            pass
+
+    # Save using the refactored database module
+    new_case = add_case(
         session=session,
         case_id=case_id,
         pdf_path=pdf_path,
-        case_type=classification['case_type'],
-        outcome=classification['outcome'],
-        confidence=classification['confidence'],
         order_date=order_date,
         text_content=cleaned_text,
-        processed_content=processed_text,
-        tables=tables
+        entities=entities,
+        tables=tables,
+        judge_name=judge_name,
+        establishment_name=establishment_name,
+        section_cited=section_cited,
+        total_dues=total_dues,
+        timeline=timeline
     )
     
-    # Save Entities (with deduplication and filtering)
-    seen_entities = set()
-    for entity_type, entity_list in entities.items():
-        if entity_type == '_enriched': continue
-        for txt in entity_list:
-            if not txt: continue
-            
-            # Filter 1: Length check
-            if len(txt) < 3: continue
-            
-            # Filter 2: Deduplication (case-insensitive per case)
-            key = (entity_type, txt.lower().strip())
-            if key in seen_entities: continue
-            seen_entities.add(key)
-            
-            # Filter 3: Blacklist (common OCR noise)
-            if txt.lower() in ['date', 'place', 'signature', 'none', 'null']: continue
-            
-            add_entity(session, new_case.id, entity_type, txt.strip())
-                
-    # Save Timeline
-    for event in timeline:
-        add_timeline_event(session, new_case.id, event)
-        
-    # Save Relations
-    for relation in relations:
-        add_relation(session, new_case.id, relation)
-        
-    # Save Financial Data (if any parsed in enriched_data)
-    if 'financial_data' in enriched_data and isinstance(enriched_data['financial_data'], dict):
-        for acc, amt in enriched_data['financial_data'].items():
-             # Basic cleanup if needed, but assuming float/int
-            try:
-                val = float(amt) if isinstance(amt, (int, float, str)) else 0.0
-                add_financial_record(session, new_case.id, acc, val)
-            except:
-                pass
-                
-    session.commit() # Commit all child records
-    
-    print(f"[Pipeline] ✅ Saved case: {case_id}\n")
+    print(f"[Pipeline] ✅ Saved case: {case_id} (Judge: {judge_name}, Section: {section_cited})\n")
     return new_case
